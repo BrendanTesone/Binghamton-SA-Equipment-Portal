@@ -16,15 +16,25 @@ An end-to-end web portal for student organizations and executive officers at Bin
 
 ## 📸 Interface & System Screenshots
 
-Screenshots are organized in [`docs/screenshots/`](docs/screenshots/):
+All system screenshots are organized in [`docs/screenshots/`](docs/screenshots/):
 
-| Screenshot | Description | File Path |
-| --- | --- | --- |
-| **Dashboard & Navigation** | Overview of main administrative dashboard and tab navigation system | `docs/screenshots/01-dashboard-overview.png` |
-| **Client Order Form** | Event details, date range picker, and equipment selection table | `docs/screenshots/02-client-order-form.png` |
-| **Approval & Processing Modal** | Admin order approval, rejection, and schedule modification workflow | `docs/screenshots/03-process-equipment-modal.png` |
-| **Equipment Warehouse** | Real-time inventory tracking, condition monitoring, and stock management | `docs/screenshots/04-equipment-warehouse.png` |
-| **Google OAuth Login** | Secure Google Identity Services authentication tab | `docs/screenshots/05-google-auth-login.png` |
+### 🔑 Authentication & Access Control
+| Google OAuth 2.0 Sign-In | User Profile & Sign-Out | Access Control & Permissions |
+| :---: | :---: | :---: |
+| ![Google Sign-In](docs/screenshots/signin.png) | ![User Profile & Sign-Out](docs/screenshots/signout.png) | ![Access Control](docs/screenshots/grant-access.png) |
+| `docs/screenshots/signin.png` | `docs/screenshots/signout.png` | `docs/screenshots/grant-access.png` |
+
+### 📝 Client Equipment Request Workflow
+| 1. Contact & Event Details | 2. Equipment Availability & Selection | 3. Order Submission |
+| :---: | :---: | :---: |
+| ![Contact & Event Details](docs/screenshots/form-contact.png) | ![Equipment Availability](docs/screenshots/form-avail.png) | ![Order Submission](docs/screenshots/form-submit.png) |
+| `docs/screenshots/form-contact.png` | `docs/screenshots/form-avail.png` | `docs/screenshots/form-submit.png` |
+
+### 🛠️ Administrative & Warehouse Management
+| Admin Control & Warehouse Management Dashboard |
+| :---: |
+| ![Admin Control & Warehouse Dashboard](docs/screenshots/Admin.png) |
+| `docs/screenshots/Admin.png` |
 
 ---
 
