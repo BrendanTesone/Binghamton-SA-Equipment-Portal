@@ -1,4 +1,4 @@
-# 🛠️ Binghamton SA Equipment Management Portal
+# Binghamton SA Equipment Management Portal
 
 [![Live Demo](https://img.shields.io/badge/Live_Site-equipment.binghamtonsa.org-blue?style=for-the-badge&logo=google-chrome)](https://equipment.binghamtonsa.org)
 [![React](https://img.shields.io/badge/Frontend-React_%2B_Vite-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
@@ -9,28 +9,28 @@ An end-to-end web portal for student organizations and executive officers at Bin
 
 ---
 
-## 🔗 Live Application
+## [::] Live Application
 - **Production URL:** [https://equipment.binghamtonsa.org](https://equipment.binghamtonsa.org)
 
 ---
 
-## 📸 Interface & System Screenshots
+## [::] Interface & System Screenshots
 
 All system screenshots are organized in [`docs/screenshots/`](docs/screenshots/):
 
-### 🔑 Authentication & Access Control
+### [->] Authentication & Access Control
 | Google OAuth 2.0 Sign-In | User Profile & Sign-Out | Access Control & Permissions |
 | :---: | :---: | :---: |
 | ![Google Sign-In](docs/screenshots/signin.png) | ![User Profile & Sign-Out](docs/screenshots/signout.png) | ![Access Control](docs/screenshots/grant-access.png) |
 | `docs/screenshots/signin.png` | `docs/screenshots/signout.png` | `docs/screenshots/grant-access.png` |
 
-### 📝 Client Equipment Request Workflow
+### [->] Client Equipment Request Workflow
 | 1. Contact & Event Details | 2. Equipment Availability & Selection | 3. Order Submission |
 | :---: | :---: | :---: |
 | ![Contact & Event Details](docs/screenshots/form-contact.png) | ![Equipment Availability](docs/screenshots/form-avail.png) | ![Order Submission](docs/screenshots/form-submit.png) |
 | `docs/screenshots/form-contact.png` | `docs/screenshots/form-avail.png` | `docs/screenshots/form-submit.png` |
 
-### 🛠️ Administrative & Warehouse Management
+### [->] Administrative & Warehouse Management
 | Admin Control & Warehouse Management Dashboard |
 | :---: |
 | ![Admin Control & Warehouse Dashboard](docs/screenshots/Admin.png) |
@@ -38,7 +38,7 @@ All system screenshots are organized in [`docs/screenshots/`](docs/screenshots/)
 
 ---
 
-## 🚀 Basic Functionality Summary
+## [::] Basic Functionality Summary
 
 ### 1. Client Request Portal (`ClientOrderTab`)
 - Club officers submit rental requests specifying event details, pickup/dropoff date ranges, and target equipment.
@@ -56,7 +56,7 @@ All system screenshots are organized in [`docs/screenshots/`](docs/screenshots/)
 
 ---
 
-## 🔐 Authentication & Security Architecture
+## [::] Authentication & Security Architecture
 
 ### Google Identity Services (GIS) + PHP Session Bridge
 1. **Frontend Authentication:** The React frontend uses Google OAuth 2.0 (`@react-oauth/google` / GIS) to prompt user login via university Google credentials.
@@ -67,7 +67,7 @@ All system screenshots are organized in [`docs/screenshots/`](docs/screenshots/)
 
 ---
 
-## 💡 Software Engineering & Design Rationale
+## [::] Software Engineering & Design Rationale
 
 ### Why React + Vite (SPA)?
 - Provides instantaneous tab switching between orders, warehouse, and email configuration, giving administrators a fast desktop-like experience.
@@ -83,19 +83,32 @@ All system screenshots are organized in [`docs/screenshots/`](docs/screenshots/)
 
 ---
 
-## 🛠️ Quick Setup & Development Guide
+## [::] System Requirements
 
-```bash
-# 1. Clone repository
-git clone https://github.com/YourOrg/equipment-managment-site.git
-cd equipment-managment-site
+- **Frontend Build Environment:** Node.js (v18+) & npm
+- **Backend Web Server:** PHP (v8.0+) with `pdo_mysql` and `openssl` extensions
+- **Database Engine:** MySQL 5.7+ / MariaDB 10.3+
 
-# 2. Install dependencies
-npm install
+---
 
-# 3. Start frontend dev server
-npm run dev
+## [::] Build & Deployment Instructions
 
-# 4. PHP Backend Deployment
-# Copy php-backend/ to your local PHP web server (XAMPP / Apache / Nginx)
-```
+1. **Frontend Build & Deployment:**
+   - Ensure the backend server API endpoint URL is properly linked/embedded in the frontend configuration prior to building.
+   - Install dependencies and build the production static bundle:
+     ```bash
+     npm install
+     npm run build
+     ```
+   - Upload the generated static files inside `dist/` to your frontend web server.
+
+2. **Backend Server Configuration:**
+   - Upload the contents of `php-backend/` to your PHP web server.
+   - Backend database and SMTP configuration files must be placed in a non-web-accessible `secrets/` directory on the root of the backend webserver.
+
+---
+
+## [::] Author & Attribution
+
+- **Organization:** Binghamton University Student Association (EVP Office)
+- **Developer:** Brendan Tesone ([@BrendanTesone](https://github.com/BrendanTesone))
