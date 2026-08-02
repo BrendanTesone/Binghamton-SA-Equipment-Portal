@@ -49,8 +49,8 @@ function sendEquipmentRejectedEmail($recipientEmail, $recipientName, $rejectionR
         $mail->isSMTP();                                            // Send using SMTP
         $mail->Host       = $host;                                  // Set the SMTP server to send through
         $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-        $mail->Username   = $smtp_user;                             // SMTP username (AKIA...)
-        $mail->Password   = $smtp_pass;                             // SMTP password (The secret Manav provided)
+        $mail->Username   = $smtp_user;                             // SMTP username
+        $mail->Password   = $smtp_pass;                             // SMTP password
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            // Enable implicit TLS encryption (SSL)
         $mail->Port       = 465;                                    // TCP port to connect to
 
