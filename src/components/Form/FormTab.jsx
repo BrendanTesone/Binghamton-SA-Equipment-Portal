@@ -193,7 +193,7 @@ const FormTab = ({ initialRows = [], allEquipment = [], refreshData }) => {
                   <Typography variant="body2"><strong>Date:</strong> {row.dateOfEvent}</Typography>
                   <Typography variant="body2"><strong>Loc:</strong> {row.location}</Typography>
                   <Typography variant="caption" sx={{ display: 'block', mt: 0.5 }}>
-                    <strong>BEngaged Event Link:</strong> <Link href={row.bEngagedLink} target="_blank" rel="noopener">{row.bEngagedLink}</Link>
+                    <strong>BEngaged Event Link:</strong> <Link href={row.bEngagedLink ? (/^https?:\/\//i.test(row.bEngagedLink.trim()) ? row.bEngagedLink.trim() : `https://${row.bEngagedLink.trim()}`) : '#'} target="_blank" rel="noopener">{row.bEngagedLink}</Link>
                   </Typography>
                 </TableCell>
               </TableRow>

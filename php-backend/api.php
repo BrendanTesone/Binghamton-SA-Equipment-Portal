@@ -50,7 +50,9 @@ $admin_actions = [
     'add_admin',
     'remove_admin',
     'send_rejection_email',
-    'send_approval_email'
+    'send_approval_email',
+    'add_club_account',
+    'delete_club_account'
 ];
 
 if (in_array($action, $admin_actions) && $userRole !== 'admin') {
@@ -82,12 +84,14 @@ try {
                     unset($groupedOrders[$id]['equipment_id']);
                     unset($groupedOrders[$id]['equipment_name']);
                     unset($groupedOrders[$id]['equipment_status']);
+                    unset($groupedOrders[$id]['equipment_active_order_id']);
                 }
                 if (!empty($row['equipment_id'])) {
                     $groupedOrders[$id]['equipment_items'][] = [
-                        'id' => $row['equipment_id'],
-                        'name' => $row['equipment_name'],
-                        'status' => $row['equipment_status']
+                        'id'              => $row['equipment_id'],
+                        'name'            => $row['equipment_name'],
+                        'status'          => $row['equipment_status'],
+                        'active_order_id' => $row['equipment_active_order_id']
                     ];
                 }
             }
@@ -262,6 +266,33 @@ try {
             } else {
                 sendError("Failed: " . $result['error']);
             }
+            break;
+
+        // --- 18. Get Club Accounts (Public) ---
+        case 'get_club_accounts':
+            $stmt = $pdo->query("CALL sp_GetClubAccounts()");
+            $accounts = $stmt->fetchAll();
+            sendSuccess($accounts);
+            break;
+
+        // --- 19. Add / Update Club Account (Admin) ---
+        case 'add_club_account':
+            if (empty($input['club_name']) || empty($input['account_number'])) {
+                sendError("Club name and account number are required", 400);
+            }
+            $stmt = $pdo->prepare("CALL sp_AddClubAccount(?, ?)");
+            $stmt->execute([$input['club_name'], $input['account_number']]);
+            sendSuccess("Club account saved");
+            break;
+
+        // --- 20. Delete Club Account (Admin) ---
+        case 'delete_club_account':
+            if (empty($input['id'])) {
+                sendError("Club account ID is required", 400);
+            }
+            $stmt = $pdo->prepare("CALL sp_DeleteClubAccount(?)");
+            $stmt->execute([$input['id']]);
+            sendSuccess("Club account deleted");
             break;
     }
 } catch (PDOException $e) {

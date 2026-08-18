@@ -4,6 +4,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import NumbersIcon from '@mui/icons-material/Numbers';
 import LockIcon from '@mui/icons-material/Lock';
 
 const Sidebar = ({ role }) => {
@@ -16,6 +17,7 @@ const Sidebar = ({ role }) => {
         { text: 'Equipment List', icon: <InventoryIcon />, path: '/equipment-list', roles: ['admin'] },
         { text: 'Club Equipment Order', icon: <ShoppingCartIcon />, path: '/client-order', roles: ['admin', 'client'] },
         { text: 'Admin Access', icon: <AdminPanelSettingsIcon />, path: '/admin-control', roles: ['admin'] },
+        { text: 'Account Numbers', icon: <NumbersIcon />, path: '/account-numbers', roles: ['admin'] },
         { text: role === 'unlogged' ? 'Sign In' : 'Sign Out', icon: <LockIcon />, path: '/auth', roles: ['admin', 'client', 'unlogged'] },
     ];
 

@@ -48,8 +48,10 @@ const STATUS_CONFIG = {
 const ApprovalStatusSelector = ({ currentStatus, onStatusChange }) => {
     const [pending, setPending] = useState(null);
 
+    const isTerminal = currentStatus === 'Denied' || currentStatus === 'Completed';
+
     const handleSelect = (id) => {
-        if (id === currentStatus || STATUS_CONFIG[id].unselectable) return;
+        if (id === currentStatus || STATUS_CONFIG[id]?.unselectable || isTerminal) return;
         setPending(id);
     };
 
@@ -86,14 +88,26 @@ const ApprovalStatusSelector = ({ currentStatus, onStatusChange }) => {
                     const isActive = currentStatus === cfg.id;
                     const Icon = cfg.icon;
 
+                    const isPendingRevert = cfg.id === 'Pending Approval' && currentStatus !== 'Pending Approval';
+                    const isLockedByTerminal = isTerminal && !isActive;
+                    const isDisabled = isPendingRevert || isLockedByTerminal;
+
+                    let tooltipTitle = "";
+                    if (isLockedByTerminal) {
+                        tooltipTitle = `Cannot change status of a ${currentStatus} order`;
+                    } else if (isPendingRevert) {
+                        tooltipTitle = "Admin cannot revert status back to pending";
+                    }
+
                     return (
                         <SmartTooltip
                             key={cfg.id}
-                            title="Admin cannot revert status back to pending"
-                            disabled={cfg.id === 'Pending Approval' && currentStatus !== 'Pending Approval'}
+                            title={tooltipTitle}
+                            disabled={isDisabled}
                         >
                             <Box
                                 component="button"
+                                disabled={isDisabled}
                                 onClick={() => handleSelect(cfg.id)}
                                 sx={{
                                     display: 'flex',
@@ -104,18 +118,19 @@ const ApprovalStatusSelector = ({ currentStatus, onStatusChange }) => {
                                     width: '100%',
                                     height: '100%',
                                     bgcolor: isActive ? cfg.bg : 'transparent',
-                                    color: isActive ? cfg.color : '#94a3b8', // slate-400
+                                    color: isActive ? cfg.color : (isLockedByTerminal ? '#cbd5e1' : '#94a3b8'), // slate-400 or slate-300
+                                    opacity: isLockedByTerminal ? 0.35 : 1,
                                     borderRadius: 1,
-                                    cursor: cfg.unselectable ? 'default' : 'pointer',
+                                    cursor: isDisabled ? 'not-allowed' : (cfg.unselectable ? 'default' : 'pointer'),
                                     transition: 'all 0.2s',
                                     aspectRatio: '1/1',
                                     boxShadow: isActive ? `inset 0 0 0 1px ${cfg.color}33` : 'none',
                                     '&:hover': {
-                                        bgcolor: !isActive && !cfg.unselectable ? '#f8fafc' : undefined,
-                                        color: !isActive && !cfg.unselectable ? '#475569' : undefined
+                                        bgcolor: !isActive && !isDisabled && !cfg.unselectable ? '#f8fafc' : undefined,
+                                        color: !isActive && !isDisabled && !cfg.unselectable ? '#475569' : undefined
                                     },
                                     '&:disabled': {
-                                        opacity: 0.6,
+                                        opacity: isLockedByTerminal ? 0.35 : 0.6,
                                         cursor: 'not-allowed'
                                     }
                                 }}

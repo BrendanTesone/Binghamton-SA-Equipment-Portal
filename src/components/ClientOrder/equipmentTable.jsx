@@ -10,6 +10,7 @@ import {
   Typography,
   Checkbox,
   Box,
+  Tooltip,
 } from "@mui/material";
 
 const toISODate = (date) => {
@@ -51,11 +52,14 @@ const EquipmentTable = ({
 
     const map = {};
     adminData.formRows.forEach(order => {
-      const activeStatuses = ['Pending Approval', 'Approved', 'Picked Up', 'Late'];
-      if (!activeStatuses.includes(order.status) && order.status !== 'Pending') return;
+      const activeStatuses = ['Approved', 'Pending Approval'];
+      if (!activeStatuses.includes(order.status)) return;
 
       const start = new Date(order.pickup);
+      start.setHours(0, 0, 0, 0); // Normalize to midnight — prevents pickup time from bleeding into day iteration
+
       const end = new Date(order.dropoff);
+      end.setHours(0, 0, 0, 0);   // Normalize to midnight of dropoff day — ensures dropoff day is included
 
       let current = new Date(start);
       while (current <= end) {
@@ -80,13 +84,20 @@ const EquipmentTable = ({
     const rangeDateStrings = displayDays.map(toISODate);
 
     const items = adminData.availableEquipment.map(item => {
+      const isUnavailable = item.status === 'In Office - Unavailable' ||
+                            item.status === 'Unavailable' ||
+                            (item.status && item.status.toLowerCase().includes('unavailable'));
+
       const reservedSet = reservationMap[item.id] || new Set();
-      const hasConflict = rangeDateStrings.some(d => reservedSet.has(d));
+      const hasDateConflict = rangeDateStrings.some(d => reservedSet.has(d));
+      const hasConflict = isUnavailable || hasDateConflict;
       const isChecked = checkedIds.has(item.id);
 
       return {
         ...item,
         reservedDateSet: reservedSet,
+        isUnavailable: isUnavailable,
+        hasDateConflict: hasDateConflict,
         hasConflict: hasConflict,
         isChecked: isChecked
       };
@@ -196,13 +207,21 @@ const EquipmentTable = ({
           </TableHead>
           <TableBody>
             {sortedItems.map((item) => {
+              const rowBgColor = item.isUnavailable
+                ? '#ffebee'
+                : (item.hasConflict ? '#f9f9f9' : 'inherit');
+
+              const stickyBgColor = item.isUnavailable
+                ? '#ffebee'
+                : 'background.paper';
+
               return (
                 <TableRow
                   key={item.id}
                   hover
                   sx={{
-                    opacity: item.hasConflict ? 0.6 : 1,
-                    bgcolor: item.hasConflict ? '#f5f5f5' : 'inherit'
+                    opacity: item.isUnavailable ? 0.85 : (item.hasConflict ? 0.75 : 1),
+                    bgcolor: rowBgColor
                   }}
                 >
                   <TableCell
@@ -210,12 +229,19 @@ const EquipmentTable = ({
                       position: 'sticky',
                       left: 0,
                       zIndex: 2,
-                      bgcolor: 'background.paper',
+                      bgcolor: stickyBgColor,
                       fontWeight: 'bold',
                       borderRight: '1px solid rgba(224, 224, 224, 1)'
                     }}
                   >
-                    {item.name}
+                    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                      <span>{item.name}</span>
+                      {item.isUnavailable && (
+                        <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 'normal', fontSize: '0.75rem' }}>
+                          (Unavailable)
+                        </Typography>
+                      )}
+                    </Box>
                   </TableCell>
                   <TableCell
                     align="center"
@@ -223,21 +249,40 @@ const EquipmentTable = ({
                       position: 'sticky',
                       left: 200,
                       zIndex: 2,
-                      bgcolor: 'background.paper',
+                      bgcolor: stickyBgColor,
                       borderRight: '1px solid rgba(224, 224, 224, 1)'
                     }}
                   >
-                    <Checkbox
-                      checked={item.isChecked}
-                      onChange={() => handleCheckboxClick(item.id)}
-                      disabled={item.hasConflict}
-                      size="small"
-                    />
+                    <Tooltip
+                      title={
+                        item.isUnavailable
+                          ? "This item is currently unavailable (Out of service / Maintenance)"
+                          : (item.hasConflict ? "Item is unavailable for the selected dates" : "")
+                      }
+                      arrow
+                      placement="top"
+                    >
+                      <span>
+                        <Checkbox
+                          checked={item.isChecked}
+                          onChange={() => handleCheckboxClick(item.id)}
+                          disabled={item.hasConflict}
+                          size="small"
+                        />
+                      </span>
+                    </Tooltip>
                   </TableCell>
 
                   {displayDays.map((date) => {
                     const dateStr = toISODate(date);
                     const isReserved = item.reservedDateSet.has(dateStr);
+
+                    let tooltipTitle = `${item.name} - ${dateStr}: Available`;
+                    if (item.isUnavailable) {
+                      tooltipTitle = `${item.name} - ${dateStr}: Unavailable (Out of service / Maintenance)`;
+                    } else if (isReserved) {
+                      tooltipTitle = `${item.name} - ${dateStr}: Reserved for another order`;
+                    }
 
                     return (
                       <TableCell
@@ -248,18 +293,22 @@ const EquipmentTable = ({
                           height: 40
                         }}
                       >
-                        <Box
-                          sx={{
-                            width: '100%',
-                            height: '100%',
-                            minHeight: 40,
-                            bgcolor: isReserved
-                              ? (item.hasConflict ? 'error.dark' : 'error.main')
-                              : '#b9f6ca',
-                            opacity: isReserved ? 0.9 : 0.8
-                          }}
-                          title={`${item.name} - ${dateStr}: ${isReserved ? 'Reserved' : 'Available'}`}
-                        />
+                        <Tooltip title={tooltipTitle} arrow placement="top">
+                          <Box
+                            sx={{
+                              width: '100%',
+                              height: '100%',
+                              minHeight: 40,
+                              bgcolor: item.isUnavailable
+                                ? 'error.main'
+                                : (isReserved
+                                    ? (item.hasConflict ? 'error.dark' : 'error.main')
+                                    : '#b9f6ca'),
+                              opacity: (item.isUnavailable || isReserved) ? 0.9 : 0.8,
+                              cursor: 'pointer'
+                            }}
+                          />
+                        </Tooltip>
                       </TableCell>
                     );
                   })}

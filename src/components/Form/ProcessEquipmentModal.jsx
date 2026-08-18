@@ -194,7 +194,7 @@ const ProcessEquipmentModal = ({ open, onClose, order, allEquipment = [], allOrd
 
     const hasBlockingItems = currentEquipment.some(item =>
         item.status === 'In Office - Unavailable' ||
-        (item.status === 'Picked Up' && item.active_order_id && item.active_order_id !== order.id)
+        (item.status === 'Picked Up')
     );
 
     const canBulkCheckOut = currentEquipment.length > 0 &&
@@ -276,6 +276,12 @@ const ProcessEquipmentModal = ({ open, onClose, order, allEquipment = [], allOrd
                                     const canCheckOut = status === 'Available' && order?.status === 'Approved';
                                     const canCheckIn = status === 'Picked Up' || status === 'In Office - Unavailable';
 
+                                    let holdingClub = order.club;
+                                    if (item.activeOrderId && item.activeOrderId !== order.id) {
+                                        const holdingOrder = allOrders.find(o => o.id === item.activeOrderId);
+                                        holdingClub = holdingOrder?.club || holdingOrder?.club_name || 'Other Club';
+                                    }
+
                                     return (
                                         <ListItem
                                             key={index}
@@ -294,7 +300,7 @@ const ProcessEquipmentModal = ({ open, onClose, order, allEquipment = [], allOrd
                                             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
                                                 <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1e293b' }}>{item.name}</Typography>
                                                 <Chip
-                                                    label={status === 'Picked Up' ? `Picked Up by ${order.club}` : status}
+                                                    label={status === 'Picked Up' ? `Picked Up by ${holdingClub}` : status}
                                                     color={getStatusColor(status)}
                                                     size="small"
                                                     variant="outlined"

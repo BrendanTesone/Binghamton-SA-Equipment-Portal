@@ -10,6 +10,7 @@ import WarehouseTab from './components/Warehouse/WarehouseTab';
 import ClientOrderTab from './components/ClientOrder/ClientOrderTab';
 import AuthenticationTab from './components/AuthenticationTest/AuthenticationTab';
 import AdminControlTab from './components/AuthenticationTest/AdminControlTab';
+import AccountNumbersTab from './components/AccountNumbers/AccountNumbersTab';
 import theme from './utils/theme';
 
 function App() {
@@ -54,7 +55,7 @@ function App() {
           id: order.order_id,
           club: order.club_name,
           status: order.status,
-          equipment: order.equipment_items.map(item => ({ name: item.name, status: item.status, id: item.id })),
+          equipment: order.equipment_items.map(item => ({ name: item.name, status: item.status, id: item.id, activeOrderId: item.active_order_id ?? null })),
           signedOffBy: order.signed_name,
           email: order.email,
           contactName: order.signed_name,
@@ -164,6 +165,9 @@ function App() {
                 } />
                 <Route path="/admin-control" element={
                   <AdminControlTab />
+                } />
+                <Route path="/account-numbers" element={
+                  <AccountNumbersTab />
                 } />
                 <Route path="/" element={<Navigate to="/process-forms" replace />} />
                 {/* Fallback for undefined routes while logged in */}

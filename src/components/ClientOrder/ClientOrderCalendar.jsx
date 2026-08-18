@@ -17,7 +17,7 @@ const ClientOrderCalendar = ({
 
     // Generate time options from 5:00 AM to 12:00 AM (Next Day/Midnight)
     const timeOptions = [];
-    for (let i = 5; i <= 24; i++) {
+    for (let i = 6; i <= 22; i++) {
         let label = '';
         if (i < 12) label = `${i}:00 AM`;
         else if (i === 12) label = `12:00 PM`;

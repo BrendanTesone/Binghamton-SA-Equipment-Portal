@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Box, Button, Paper } from '@mui/material';
 import ClientOrderForm from './ClientOrderForm';
 import TermsAndConditions from './TermsAndConditions';
 import ClientOrderCalendar from './ClientOrderCalendar';
-import { clubData } from './clubData';
 
 const ClientOrderTab = ({ adminData, user, refreshData }) => {
+    const [clubAccounts, setClubAccounts] = useState([]);
+
     const [orderDetails, setOrderDetails] = useState({
         contactName: '',
         email: '',
@@ -21,18 +22,36 @@ const ClientOrderTab = ({ adminData, user, refreshData }) => {
     });
 
     useEffect(() => {
+        const fetchClubAccounts = async () => {
+            try {
+                const res = await fetch('https://equipment.binghamtonsa.org/api.php?action=get_club_accounts');
+                const data = await res.json();
+                if (data.success && Array.isArray(data.data)) {
+                    setClubAccounts(data.data);
+                }
+            } catch (err) {
+                console.error("Error fetching club accounts:", err);
+            }
+        };
+        fetchClubAccounts();
+    }, []);
+
+    useEffect(() => {
         if (user) {
             const userEmail = user.email || '';
-            const matchingClub = clubData.find(c => c.email && c.email.toLowerCase() === userEmail.toLowerCase());
+            const matchingClub = clubAccounts.find(c =>
+                (c.email && c.email.toLowerCase() === userEmail.toLowerCase()) ||
+                (c.club_name && c.club_name.toLowerCase() === userEmail.toLowerCase())
+            );
 
             setOrderDetails(prev => ({
                 ...prev,
                 email: userEmail || prev.email,
-                clubName: matchingClub ? matchingClub.name : prev.clubName,
-                clubAccountNumber: matchingClub ? matchingClub.id : prev.clubAccountNumber
+                clubName: matchingClub ? matchingClub.club_name : prev.clubName,
+                clubAccountNumber: matchingClub ? matchingClub.account_number : prev.clubAccountNumber
             }));
         }
-    }, [user]);
+    }, [user, clubAccounts]);
 
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
@@ -48,8 +67,8 @@ const ClientOrderTab = ({ adminData, user, refreshData }) => {
 
     const onClubChange = (event, value) => {
         const clubName = value || '';
-        const foundClub = clubData.find(c => c.name === clubName);
-        const foundId = foundClub ? foundClub.id : '';
+        const foundClub = clubAccounts.find(c => c.club_name?.toLowerCase() === clubName.toLowerCase());
+        const foundId = foundClub ? foundClub.account_number : '';
 
         setOrderDetails(prev => ({
             ...prev,
@@ -170,7 +189,9 @@ const ClientOrderTab = ({ adminData, user, refreshData }) => {
             });
     };
 
-    const clubOptions = clubData.map(c => c.name);
+    const clubOptions = useMemo(() => {
+        return clubAccounts.map(c => c.club_name);
+    }, [clubAccounts]);
 
     return (
         <Box sx={{ p: 2, display: 'flex', flexDirection: 'column', gap: 4 }}>
