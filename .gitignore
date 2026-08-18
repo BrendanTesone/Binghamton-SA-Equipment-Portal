@@ -31,6 +31,10 @@ Thumbs.db
 
 # Sensitive / Untracked Data
 clubData.js
+clubdata.js
+**/clubData.js
+**/clubdata.js
 src/components/ClientOrder/clubData.js
+src/components/ClientOrder/clubdata.js
 clubs_seed.json
 php-backend/clubs_seed.json
